@@ -1,0 +1,12 @@
+{% extends 'contatos/base.html' %}
+
+{% block content %}
+    <h2>{{ contato.nome }}</h2>
+    <p><strong>Email:</strong> {{ contato.email }}</p>
+    <p><strong>Telefone:</strong> {{ contato.telefone }}</p>
+    <p><strong>Cadastrado em:</strong> {{ contato.criado_em }}</p>
+    <hr>
+    <a href="{% url 'contatos:editar' contato.pk %}">Editar</a>
+    <a href="{% url 'contatos:deletar' contato.pk %}">Deletar</a>
+    <a href="{% url 'contatos:listar' %}">Voltar</a>
+{% endblock %}

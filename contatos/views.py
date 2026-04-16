@@ -1,38 +1,47 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Contato
 from .forms import ContatoForm
 
 
-def listar_contatos(request):
-    contatos = Contato.objects.all()
-    return render(request, 'contatos/lista.html', {'contatos': contatos})
+class ContatoListView(ListView):
+    model = Contato
+    template_name = 'contatos/lista.html'
+    context_object_name = 'contatos'
 
 
-def detalhar_contato(request, pk):
-    contato = get_object_or_404(Contato, pk=pk)
-    return render(request, 'contatos/detalhe.html', {'contato': contato})
+class ContatoDetailView(DetailView):
+    model = Contato
+    template_name = 'contatos/detalhe.html'
+    context_object_name = 'contato'
 
 
-def criar_contato(request):
-    form = ContatoForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('contatos:listar')
-    return render(request, 'contatos/form.html', {'form': form, 'page_title': 'Novo Contato'})
+class ContatoCreateView(CreateView):
+    model = Contato
+    form_class = ContatoForm
+    template_name = 'contatos/form.html'
+    success_url = reverse_lazy('contatos:listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Novo Contato'
+        return context
 
 
-def editar_contato(request, pk):
-    contato = get_object_or_404(Contato, pk=pk)
-    form = ContatoForm(request.POST or None, instance=contato)
-    if form.is_valid():
-        form.save()
-        return redirect('contatos:listar')
-    return render(request, 'contatos/form.html', {'form': form, 'page_title': 'Editar Contato'})
+class ContatoUpdateView(UpdateView):
+    model = Contato
+    form_class = ContatoForm
+    template_name = 'contatos/form.html'
+    success_url = reverse_lazy('contatos:listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Editar Contato'
+        return context
 
 
-def deletar_contato(request, pk):
-    contato = get_object_or_404(Contato, pk=pk)
-    if request.method == 'POST':
-        contato.delete()
-        return redirect('contatos:listar')
-    return render(request, 'contatos/confirmar_delete.html', {'contato': contato})
+class ContatoDeleteView(DeleteView):
+    model = Contato
+    template_name = 'contatos/confirmar_delete.html'
+    success_url = reverse_lazy('contatos:listar')
+    context_object_name = 'contato'
